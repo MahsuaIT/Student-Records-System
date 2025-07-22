@@ -119,24 +119,12 @@
       e.preventDefault();
 
       const form = e.target;
-
-      const newStudent = {
-        "Roll Number": form.roll.value.trim(),
-        "Enrolment Number": form.enrolment.value.trim(),
-        "Student Name": form.name.value.trim(),
-        "Hindi": Number(form.hindi.value),
-        "English": Number(form.english.value),
-        "Maths": Number(form.maths.value),
-        "GK": Number(form.gk.value)
-      };
+      const formData = new FormData(form);
 
       try {
         const response = await fetch(API_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(newStudent)
+          body: formData
         });
 
         const result = await response.json();
