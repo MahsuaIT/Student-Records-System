@@ -1,674 +1,161 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Records System</title>
-  <!-- Lucide Icons CDN for theme toggle - MOVED TO TOP FOR EARLIER LOADING -->
-  <script src="https://unpkg.com/lucide-latest"></script>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Student Data</title>
   <style>
-    /* Custom CSS for theme transitions and base styles */
-    :root {
-      --primary: #4285f4; /* Google Blue */
-      --danger: #ea4335; /* Google Red */
-      --success: #34a853; /* Google Green */
-      --warning: #fbbc05; /* Google Yellow */
-
-      /* Light Mode Colors */
-      --bg-light: #f5f5f5;
-      --card-bg-light: white;
-      --text-light: #202124; /* Dark gray for text, effectively black */
-      --border-light: #ddd;
-      --input-bg-light: white;
-      --table-header-bg-light: var(--primary);
-      --table-header-text-light: white;
-      --table-row-hover-light: rgba(66, 133, 244, 0.1);
-      --alert-success-bg-light: rgba(52, 168, 83, 0.2);
-      --alert-success-border-light: var(--success);
-      --alert-error-bg-light: rgba(234, 67, 53, 0.2);
-      --alert-error-border-light: var(--danger);
-    }
-
-    /* Dark Mode Colors */
-    html.dark {
-      --bg-dark: #1a202c; /* Dark background */
-      --card-bg-dark: #2d3748; /* Slightly lighter dark for cards */
-      --text-dark: #e2e8f0; /* Light gray for general text */
-      --border-dark: #4a5568;
-      --input-bg-dark: #2d3748;
-      --table-header-bg-dark: #4a5568; /* Darker header */
-      --table-header-text-dark: #e2e8f0;
-      --table-row-hover-dark: rgba(66, 133, 244, 0.2);
-      --alert-success-bg-dark: rgba(52, 168, 83, 0.3);
-      --alert-success-border-dark: var(--success);
-      --alert-error-bg-dark: rgba(234, 67, 53, 0.3);
-      --alert-error-border-dark: var(--danger);
-    }
-
-    /* Apply colors based on theme */
     body {
-      background-color: var(--bg-light);
-      color: var(--text-light); /* Default text color for light mode */
-      transition: background-color 0.3s ease, color 0.3s ease;
-      font-family: 'Inter', sans-serif; /* Using Inter font */
-    }
-    html.dark body {
-      background-color: var(--bg-dark);
-      color: var(--text-dark); /* Default text color for dark mode */
+      font-family: Arial, sans-serif;
+      padding: 20px;
     }
 
-    .container, .form-container, .total-display, .alert {
-      background-color: var(--card-bg-light);
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    html.dark .container, html.dark .form-container, html.dark .total-display, html.dark .alert {
-      background-color: var(--card-bg-dark);
+    h1, h2 {
+      margin-bottom: 10px;
     }
 
-    input, select {
-      border-color: var(--border-light);
-      background-color: var(--input-bg-light);
-      color: var(--text-light); /* Input text color for light mode */
-      transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    form {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    html.dark input, html.dark select {
-      border-color: var(--border-dark);
-      background-color: var(--input-bg-dark);
-      color: #f8fafc; /* Very light text for inputs in dark mode */
+
+    form input {
+      padding: 8px;
+      font-size: 14px;
+      flex: 1 1 150px;
     }
-    html.dark input:focus, html.dark select:focus {
-      border-color: var(--primary); /* Primary color remains consistent */
-      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.4);
+
+    form button {
+      padding: 8px 16px;
+      background-color: #2d89ef;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
     }
 
     th {
-      background-color: var(--table-header-bg-light);
-      color: var(--table-header-text-light);
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    html.dark th {
-      background-color: var(--table-header-bg-dark);
-      color: var(--table-header-text-dark);
-    }
-
-    tr:hover {
-      background-color: var(--table-row-hover-light);
-    }
-    html.dark tr:hover {
-      background-color: var(--table-row-hover-dark);
-    }
-
-    .alert-success {
-      background-color: var(--alert-success-bg-light);
-      color: var(--success);
-      border: 1px solid var(--alert-success-border-light);
-    }
-    html.dark .alert-success {
-      background-color: var(--alert-success-bg-dark);
-      color: var(--success);
-      border: 1px solid var(--alert-success-border-dark);
-    }
-
-    .alert-error {
-      background-color: var(--alert-error-bg-light);
-      color: var(--danger);
-      border: 1px solid var(--alert-error-border-light);
-    }
-    html.dark .alert-error {
-      background-color: var(--alert-error-bg-dark);
-      color: var(--danger);
-      border: 1px solid var(--alert-error-border-dark);
-    }
-
-    /* Loading spinner */
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Custom Modal Styles */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    .modal-overlay.show {
-      opacity: 1;
-      visibility: visible;
-    }
-    .modal-content {
-      background-color: var(--card-bg-light);
-      padding: 2rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-      transform: translateY(-20px);
-      transition: transform 0.3s ease;
-    }
-    html.dark .modal-content {
-      background-color: var(--card-bg-dark);
-    }
-    .modal-overlay.show .modal-content {
-      transform: translateY(0);
-    }
-    .modal-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1.5rem;
+      background-color: #f0f0f0;
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen flex items-center justify-center py-10">
-  <!-- Removed max-w-4xl from container for wider screen area -->
-  <div class="container bg-white p-8 rounded-lg shadow-xl w-full relative">
-    <!-- Theme Toggle Button -->
-    <button id="themeToggle" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
-      <i data-lucide="moon" class="w-6 h-6"></i>
-    </button>
+<body>
 
-    <h1 class="text-center text-3xl font-bold mb-8 text-blue-600 dark:text-blue-400">Student Records Management</h1>
+  <h1>📄 Student Data</h1>
 
-    <div id="message-container" class="mb-5"></div>
+  <h2>Add New Student</h2>
+  <form id="studentForm">
+    <input type="text" placeholder="Roll Number" name="roll" required />
+    <input type="text" placeholder="Enrolment Number" name="enrolment" required />
+    <input type="text" placeholder="Student Name" name="name" required />
+    <input type="number" placeholder="Hindi" name="hindi" required />
+    <input type="number" placeholder="English" name="english" required />
+    <input type="number" placeholder="Maths" name="maths" required />
+    <input type="number" placeholder="GK" name="gk" required />
+    <button type="submit">Add Student</button>
+  </form>
 
-    <div class="form-container bg-gray-50 p-6 rounded-lg mb-8 shadow-md">
-      <!-- "Student Form" heading -->
-      <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Student Form</h2>
-      <form id="studentForm">
-        <input type="hidden" id="StudentRollNumber">
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-          <div class="form-group">
-            <!-- Labels for form fields -->
-            <label for="EnrollmentNumber" class="block text-sm font-medium text-gray-700 dark:text-white mb-1">Enrollment Number*</label>
-            <input type="text" id="EnrollmentNumber" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-50">
-          </div>
-
-          <div class="form-group">
-            <label for="StudentName" class="block text-sm font-medium text-gray-700 dark:text-white mb-1">Student Name*</label>
-            <input type="text" id="StudentName" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-50">
-          </div>
-
-          <div class="form-group">
-            <label for="Hindi" class="block text-sm font-medium text-gray-700 dark:text-white mb-1">Hindi</label>
-            <input type="number" id="Hindi" min="0" max="100" value="0" onchange="calculateTotal()" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-50">
-          </div>
-
-          <div class="form-group">
-            <label for="English" class="block text-sm font-medium text-gray-700 dark:text-white mb-1">English</label>
-            <input type="number" id="English" min="0" max="100" value="0" onchange="calculateTotal()" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-50">
-          </div>
-
-          <div class="form-group">
-            <label for="Maths" class="block text-sm font-medium text-gray-700 dark:text-white mb-1">Maths</label>
-            <input type="number" id="Maths" min="0" max="100" value="0" onchange="calculateTotal()" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-50">
-          </div>
-
-          <div class="form-group">
-            <label for="GK" class="block text-sm font-medium text-gray-700 dark:text-white mb-1">GK</label>
-            <input type="number" id="GK" min="0" max="100" value="0" onchange="calculateTotal()" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-50">
-          </div>
-
-          <div class="form-group col-span-1 md:col-span-2 lg:col-span-1">
-            <label class="block text-sm font-medium text-gray-700 dark:text-white mb-1">Total Marks</label>
-            <div class="total-display font-bold bg-green-100 dark:bg-green-700 dark:text-green-300 text-green-800 p-3 rounded-md text-center">
-              <span id="Total">0</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex gap-3 mt-6">
-          <button type="submit" class="btn btn-primary bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-md flex items-center justify-center transition-all duration-300 ease-in-out transform hover:-translate-y-0.5" id="submitBtn">
-            <span id="submitText">Save Student</span>
-            <span id="submitSpinner" class="loading ml-2" style="display: none;"></span>
-          </button>
-          <button type="button" class="btn btn-warning bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5" onclick="resetForm()">Reset Form</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- "Student Records" heading -->
-    <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Student Records</h2>
-    <div class="overflow-x-auto rounded-lg shadow-md">
-      <table id="studentTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead>
-          <tr>
-            <th class="px-6 py-3 bg-blue-600 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tl-lg">Roll No.</th>
-            <th class="px-6 py-3 bg-blue-600 text-left text-xs font-medium text-white uppercase tracking-wider">Enrollment No.</th>
-            <th class="px-6 py-3 bg-blue-600 text-left text-xs font-medium text-white uppercase tracking-wider">Student Name</th>
-            <th class="px-6 py-3 bg-blue-600 text-left text-xs font-medium text-white uppercase tracking-wider">Hindi</th>
-            <th class="px-6 py-3 bg-blue-600 text-left text-xs font-medium text-white uppercase tracking-wider">English</th>
-            <th class="px-6 py-3 bg-blue-600 text-left text-xs font-medium text-white uppercase tracking-wider">Maths</th>
-            <th class="px-6 py-3 bg-blue-600 text-left text-xs font-medium text-white uppercase tracking-wider">GK</th>
-            <th class="px-6 py-3 bg-blue-600 text-left text-xs font-medium text-white uppercase tracking-wider">Total</th>
-            <th class="px-6 py-3 bg-blue-600 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tr-lg">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          <!-- Student rows will be rendered here -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Custom Confirmation Modal -->
-  <div id="confirmModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <p id="confirmMessage" class="text-lg font-medium mb-6 text-gray-800 dark:text-gray-200"></p>
-      <div class="modal-buttons">
-        <button id="confirmYes" class="btn bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5">Yes</button>
-        <button id="confirmNo" class="btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-md shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5">No</button>
-      </div>
-    </div>
-  </div>
+  <table id="studentTable">
+    <thead>
+      <tr>
+        <th>Roll Number</th>
+        <th>Enrolment Number</th>
+        <th>Student Name</th>
+        <th>Hindi</th>
+        <th>English</th>
+        <th>Maths</th>
+        <th>GK</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data will be inserted here -->
+    </tbody>
+  </table>
 
   <script>
-    // IMPORTANT: Replace 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE' with your actual deployed Google Apps Script Web App URL.
-    // This URL is obtained after deploying your Google Apps Script with "Execute as: Me" and "Who has access: Anyone".
-    const API_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+    const API_URL = "https://script.google.com/macros/s/AKfycbyb_JCR1rd8XnGFjLU5bYffjjzLpWWdhDC2yV9aMEFTBJOmkEfV_WYA5tb2272asr8Uzg/exec"; // 🔁 Replace with your actual Web App URL
 
-    // DOM elements
-    const htmlElement = document.documentElement;
-    const themeToggle = document.getElementById('themeToggle');
-    const studentForm = document.getElementById('studentForm');
-    const studentTable = document.getElementById('studentTable').getElementsByTagName('tbody')[0];
-    const messageContainer = document.getElementById('message-container');
-    const submitBtn = document.getElementById('submitBtn');
-    const submitText = document.getElementById('submitText');
-    const submitSpinner = document.getElementById('submitSpinner');
+    async function fetchStudentData() {
+      try {
+        const response = await fetch(API_URL);
+        const students = await response.json();
+        const tableBody = document.querySelector("#studentTable tbody");
 
-    // Modal elements
-    const confirmModal = document.getElementById('confirmModal');
-    const confirmMessage = document.getElementById('confirmMessage');
-    const confirmYesBtn = document.getElementById('confirmYes');
-    const confirmNoBtn = document.getElementById('confirmNo');
-    let confirmCallback = null; // To store the callback function for confirmation
+        tableBody.innerHTML = ""; // Clear previous data
 
-    // Initialize when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialize Lucide icons - ONLY if lucide is defined
-      // The Lucide script is loaded asynchronously, so we check if it's available.
-      // If not, we set up a listener for the window's load event as a fallback.
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-      } else {
-        console.warn("Lucide library not loaded by DOMContentLoaded. Icons might not render initially. Waiting for window.load.");
-        window.addEventListener('load', () => {
-          if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-          } else {
-            console.error("Lucide library failed to load even after window.load. Icons will not be rendered.");
-          }
+        students.forEach(student => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${student["Roll Number"] || ""}</td>
+            <td>${student["Enrolment Number"] || ""}</td>
+            <td>${student["Student Name"] || ""}</td>
+            <td>${student["Hindi"] || ""}</td>
+            <td>${student["English"] || ""}</td>
+            <td>${student["Maths"] || ""}</td>
+            <td>${student["GK"] || ""}</td>
+          `;
+
+          tableBody.appendChild(row);
         });
+      } catch (error) {
+        console.error("Failed to fetch student data:", error);
       }
-      // Set initial theme
-      setInitialTheme();
-      // Load student records
-      loadStudents();
+    }
 
-      // Form submission
-      studentForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        setLoading(true);
+    document.getElementById("studentForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-        const studentData = {
-          StudentRollNumber: document.getElementById('StudentRollNumber').value,
-          EnrollmentNumber: document.getElementById('EnrollmentNumber').value,
-          StudentName: document.getElementById('StudentName').value,
-          Hindi: document.getElementById('Hindi').value,
-          English: document.getElementById('English').value,
-          Maths: document.getElementById('Maths').value,
-          GK: document.getElementById('GK').value
-        };
+      const form = e.target;
 
-        try {
-          if (studentData.StudentRollNumber) {
-            // Update existing student
-            await updateStudent(studentData);
-            showMessage('Student updated successfully!', 'success');
-          } else {
-            // Create new student
-            const result = await createStudent(studentData);
-            showMessage(`Student created successfully with Roll Number: ${result.rollNumber}`, 'success');
-          }
+      const newStudent = {
+        "Roll Number": form.roll.value.trim(),
+        "Enrolment Number": form.enrolment.value.trim(),
+        "Student Name": form.name.value.trim(),
+        "Hindi": Number(form.hindi.value),
+        "English": Number(form.english.value),
+        "Maths": Number(form.maths.value),
+        "GK": Number(form.gk.value)
+      };
 
-          resetForm();
-          loadStudents(); // Reload table after CUD operation
-        } catch (error) {
-          showMessage(`Error: ${error.message}`, 'error');
-          console.error('Error:', error);
-        } finally {
-          setLoading(false);
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(newStudent)
+        });
+
+        const result = await response.json();
+        if (result.status === "success") {
+          alert("Student added successfully!");
+          form.reset();
+          fetchStudentData(); // Refresh table
+        } else {
+          alert("Failed to add student.");
         }
-      });
-
-      // Theme toggle event listener
-      themeToggle.addEventListener('click', toggleTheme);
-
-      // Modal button event listeners
-      confirmYesBtn.addEventListener('click', () => {
-        if (confirmCallback) {
-          confirmCallback(true);
-        }
-        hideConfirmModal();
-      });
-      confirmNoBtn.addEventListener('click', () => {
-        if (confirmCallback) {
-          confirmCallback(false);
-        }
-        hideConfirmModal();
-      });
+      } catch (error) {
+        console.error("Error adding student:", error);
+        alert("Error adding student. See console for details.");
+      }
     });
 
-    // --- Theme Management ---
-    function setInitialTheme() {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        htmlElement.className = savedTheme; // Set class based on saved theme
-      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        htmlElement.className = 'dark'; // Use system preference if no saved theme
-      } else {
-        htmlElement.className = 'light';
-      }
-      updateThemeToggleIcon();
-    }
-
-    function toggleTheme() {
-      if (htmlElement.classList.contains('light')) {
-        htmlElement.classList.remove('light');
-        htmlElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        htmlElement.classList.remove('dark');
-        htmlElement.classList.add('light');
-        localStorage.setItem('theme', 'light');
-      }
-      updateThemeToggleIcon();
-    }
-
-    function updateThemeToggleIcon() {
-      const iconElement = themeToggle.querySelector('i');
-      if (htmlElement.classList.contains('dark')) {
-        iconElement.setAttribute('data-lucide', 'sun');
-      } else {
-        iconElement.setAttribute('data-lucide', 'moon');
-      }
-      // Re-render Lucide icons after changing data-lucide attribute - ONLY if lucide is defined
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-      }
-    }
-
-    // --- Utility Functions ---
-
-    // Set loading state for the submit button
-    function setLoading(isLoading) {
-      if (isLoading) {
-        submitText.textContent = 'Processing...';
-        submitSpinner.style.display = 'inline-block';
-        submitBtn.disabled = true;
-      } else {
-        // Determine button text based on whether we are editing or saving
-        submitText.textContent = document.getElementById('StudentRollNumber').value ? 'Update Student' : 'Save Student';
-        submitSpinner.style.display = 'none';
-        submitBtn.disabled = false;
-      }
-    }
-
-    // Calculate and display total marks
-    function calculateTotal() {
-      const hindi = Number(document.getElementById('Hindi').value) || 0;
-      const english = Number(document.getElementById('English').value) || 0;
-      const maths = Number(document.getElementById('Maths').value) || 0;
-      const gk = Number(document.getElementById('GK').value) || 0;
-
-      document.getElementById('Total').textContent = hindi + english + maths + gk;
-    }
-
-    // Show message (success/error)
-    function showMessage(message, type) {
-      messageContainer.innerHTML = `
-        <div class="alert ${type === 'success' ? 'alert-success' : 'alert-error'} p-4 rounded-md mb-4">${message}</div>
-      `;
-
-      // Remove message after 5 seconds
-      setTimeout(() => {
-        messageContainer.innerHTML = '';
-      }, 5000);
-    }
-
-    // Reset form fields and button text
-    function resetForm() {
-      studentForm.reset();
-      document.getElementById('StudentRollNumber').value = ''; // Clear hidden roll number
-      document.getElementById('Total').textContent = '0'; // Reset total
-      submitText.textContent = 'Save Student'; // Reset button text
-    }
-
-    // --- Custom Confirmation Modal Functions ---
-    function showConfirmModal(message, callback) {
-      confirmMessage.textContent = message;
-      confirmCallback = callback;
-      confirmModal.classList.remove('hidden');
-      // Trigger CSS transition
-      setTimeout(() => confirmModal.classList.add('show'), 10);
-    }
-
-    function hideConfirmModal() {
-      confirmModal.classList.remove('show');
-      // Hide completely after transition
-      setTimeout(() => confirmModal.classList.add('hidden'), 300);
-      confirmCallback = null;
-    }
-
-
-    // --- API Interaction Functions (CRUD) ---
-
-    // Load all students from the Google Sheet
-    async function loadStudents() {
-      try {
-        setLoading(true);
-        // Add a cache-busting parameter to ensure fresh data for GET requests
-        const timestamp = new Date().getTime();
-        const response = await fetch(`${API_URL}?cache=${timestamp}`);
-
-        if (!response.ok) {
-          // If response is not OK (e.g., 404, 500), throw an error
-          const errorData = await response.json().catch(() => ({ error: 'Unknown network error' }));
-          throw new Error(`Network error: ${response.status} - ${errorData.error || response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        if (!data.success) {
-          // If the API returns success: false, throw an error with the message
-          throw new Error(data.error || 'Failed to load students');
-        }
-
-        renderStudentTable(data.students || []); // Render the table with fetched students
-      } catch (error) {
-        showMessage(`Error loading students: ${error.message}`, 'error');
-        console.error('Error loading students:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    // Create a new student record
-    async function createStudent(studentData) {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(studentData)
-      });
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to create student');
-      }
-
-      return data; // Returns success message and generated rollNumber
-    }
-
-    // Update an existing student record
-    async function updateStudent(studentData) {
-      const response = await fetch(API_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(studentData)
-      });
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to update student');
-      }
-
-      return data;
-    }
-
-    // Delete a student record
-    async function deleteStudent(rollNumber) {
-      showConfirmModal('Are you sure you want to delete this student?', async (confirmed) => {
-        if (confirmed) {
-          try {
-            setLoading(true);
-            const response = await fetch(API_URL, {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ StudentRollNumber: rollNumber })
-            });
-
-            const data = await response.json();
-
-            if (!data.success) {
-              throw new Error(data.error || 'Failed to delete student');
-            }
-
-            showMessage('Student deleted successfully!', 'success');
-            loadStudents(); // Reload table after deletion
-          } catch (error) {
-            showMessage(`Error deleting student: ${error.message}`, 'error');
-            console.error('Error deleting student:', error);
-          } finally {
-            setLoading(false);
-          }
-        }
-      });
-    }
-
-    // Render student data into the HTML table
-    function renderStudentTable(students) {
-      studentTable.innerHTML = ''; // Clear existing rows
-
-      if (students.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="9" class="px-6 py-4 whitespace-nowrap text-center text-gray-500 dark:text-gray-400">No student records found</td>`;
-        studentTable.appendChild(row);
-        return;
-      }
-
-      students.forEach(student => {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200'; // Tailwind hover effect
-
-        row.innerHTML = `
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-50">${student.StudentRollNumber}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-50">${student.EnrollmentNumber}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-50">${student.StudentName}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-50">${student.Hindi}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-50">${student.English}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-50">${student.Maths}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-50">${student.GK}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-700 dark:text-green-300">${student.Total}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <div class="flex gap-2">
-              <button class="btn bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded-md shadow-sm transition-all duration-200 ease-in-out transform hover:-translate-y-0.5" onclick="editStudent('${student.StudentRollNumber}')">Edit</button>
-              <button class="btn bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-md shadow-sm transition-all duration-200 ease-in-out transform hover:-translate-y-0.5" onclick="deleteStudent('${student.StudentRollNumber}')">Delete</button>
-            </div>
-          </td>
-        `;
-        studentTable.appendChild(row);
-      });
-    }
-
-    // Populate form for editing a student
-    async function editStudent(rollNumber) {
-      try {
-        setLoading(true);
-        // Fetch all students to find the one to edit (as per your current backend structure)
-        const timestamp = new Date().getTime();
-        const response = await fetch(`${API_URL}?cache=${timestamp}`);
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Unknown network error' }));
-          throw new Error(`Network error: ${response.status} - ${errorData.error || response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        if (!data.success) {
-          throw new Error(data.error || 'Failed to load student data for editing');
-        }
-
-        const student = data.students.find(s => s.StudentRollNumber === rollNumber);
-
-        if (student) {
-          // Populate form fields with student data
-          document.getElementById('StudentRollNumber').value = student.StudentRollNumber;
-          document.getElementById('EnrollmentNumber').value = student.EnrollmentNumber;
-          document.getElementById('StudentName').value = student.StudentName;
-          document.getElementById('Hindi').value = student.Hindi;
-          document.getElementById('English').value = student.English;
-          document.getElementById('Maths').value = student.Maths;
-          document.getElementById('GK').value = student.GK;
-          document.getElementById('Total').textContent = student.Total; // Update displayed total
-
-          // Scroll to form for better UX
-          document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
-
-          // Change button text to indicate update mode
-          submitText.textContent = 'Update Student';
-        } else {
-          throw new Error('Student not found for editing.');
-        }
-      } catch (error) {
-        showMessage(`Error loading student for edit: ${error.message}`, 'error');
-        console.error('Error loading student for edit:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
+    // Initial load
+    window.onload = fetchStudentData;
   </script>
+
 </body>
 </html>
